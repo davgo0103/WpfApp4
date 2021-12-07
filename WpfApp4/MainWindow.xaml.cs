@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,55 @@ namespace WpfApp4
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<Teacher> teachers = new List<Teacher>();
         public MainWindow()
         {
             InitializeComponent();
+
+            Teacher teacher1 = new Teacher() { TeacherName = "蔡士煒" };
+            teacher1.Courses.Add(new Course(teacher1) { CourseName = "視窗程式設計", Type = "選修", Point = 3, OpeningClass = "資工二甲" });
+            teacher1.Courses.Add(new Course(teacher1) { CourseName = "視窗程式設計", Type = "選修", Point = 3, OpeningClass = "資工二乙" });
+            teacher1.Courses.Add(new Course(teacher1) { CourseName = "視窗程式設計", Type = "必修", Point = 3, OpeningClass = "五專三甲" });
+
+            Teacher teacher2 = new Teacher() { TeacherName = "邱宇軒" };
+            teacher1.Courses.Add(new Course(teacher2) { CourseName = "工程數學", Type = "必修", Point = 3, OpeningClass = "資工二甲" });
+            teacher1.Courses.Add(new Course(teacher2) { CourseName = "微積分", Type = "必修", Point = 3, OpeningClass = "資工二乙" });
+            teacher1.Courses.Add(new Course(teacher2) { CourseName = "線性代數", Type = "必修", Point = 3, OpeningClass = "五專三甲" });
+
         }
     }
+
+    public class Teacher
+    {
+        public string TeacherName { get; set; }
+        public ObservableCollection<Course> Courses { get; set; }
+        public Teacher()
+        {
+            this.Courses = new ObservableCollection<Course>();
+        }
+        public override string ToString()
+        {
+            return $"教師姓名:{TeacherName}";
+        }
+    }
+    public class Course
+    {
+        public string CourseName { get; set; }
+        public string Type { get; set; }
+        public int Point { get; set; } 
+        public string OpeningClass { get; set; }
+        public Teacher Tutor { get; set; }
+
+
+        public Course(Teacher tutor)
+        {
+            Tutor = tutor;
+
+        }
+        public override string ToString()
+        {
+            return $"{CourseName} {Type} {Point}學分 開課班級:{OpeningClass}";
+        }
+    }
+
 }

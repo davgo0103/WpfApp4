@@ -7,6 +7,24 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="500"/>
+            <RowDefinition Height="80"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="500"/>
+        </Grid.ColumnDefinitions>
+        <TabControl Grid.Row="1">
+            <TabItem Header="以教師分類課程">
+                <TreeView x:Name="trvTeacher" HorizontalAlignment="Left" VerticalAlignment="Top" Height="475" Width="492">
+                    
+                </TreeView>
+            </TabItem>
+            <TabItem Header="所有課程"/>
+
+        </TabControl>
     </Grid>
 </Window>
