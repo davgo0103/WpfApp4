@@ -23,7 +23,7 @@
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:Teacher}" ItemsSource="{Binding Courses}">
                             <StackPanel Orientation="Horizontal">
-                                <Image Source="/people.png"/>
+                                <Image Source="/people.png" Width="20" Height="20"/>
                                 <TextBlock Text="{Binding TeacherName}"/>
                                 <TextBlock Text=" ["/>
                                 <TextBlock Text="{Binding Courses.Count}"/>
@@ -33,7 +33,7 @@
                         </HierarchicalDataTemplate>
                         <DataTemplate DataType="{x:Type local:Course}">
                             <StackPanel Orientation="Horizontal">
-                                <Image Source="/book.jpg" />
+                                <Image Source="/book.jpg" Width="20" Height="20" />
                                 <TextBlock Text="{Binding CourseName}"/>
                                 <TextBlock Text="{Binding OpeningClass}"/>
                                 <TextBlock Text=" (/"/>

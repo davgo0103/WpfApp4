@@ -33,9 +33,10 @@ namespace WpfApp4
             teachers.Add(teacher1);
 
             Teacher teacher2 = new Teacher() { TeacherName = "邱宇軒" };
-            teacher1.Courses.Add(new Course(teacher2) { CourseName = "工程數學", Type = "必修", Point = 3, OpeningClass = "資工二甲" });
-            teacher1.Courses.Add(new Course(teacher2) { CourseName = "微積分", Type = "必修", Point = 3, OpeningClass = "資工二乙" });
-            teacher1.Courses.Add(new Course(teacher2) { CourseName = "線性代數", Type = "必修", Point = 3, OpeningClass = "五專三甲" });
+            teacher2.Courses.Add(new Course(teacher2) { CourseName = "工程數學", Type = "必修", Point = 3, OpeningClass = "資工二甲" });
+            teacher2.Courses.Add(new Course(teacher2) { CourseName = "微積分", Type = "必修", Point = 3, OpeningClass = "資工二乙" });
+            teacher2.Courses.Add(new Course(teacher2) { CourseName = "線性代數", Type = "必修", Point = 3, OpeningClass = "五專三甲" });
+            teacher2.Courses.Add(new Course(teacher2) { CourseName = "奇蹟MU", Type = "必修", Point = 30, OpeningClass = "全年齡" });
             teachers.Add(teacher2);
 
             trvTeacher.ItemsSource = teachers;
