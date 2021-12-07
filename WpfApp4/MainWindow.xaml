@@ -20,10 +20,34 @@
         <TabControl Grid.Row="1">
             <TabItem Header="以教師分類課程">
                 <TreeView x:Name="trvTeacher" HorizontalAlignment="Left" VerticalAlignment="Top" Height="475" Width="492">
-                    
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type local:Teacher}" ItemsSource="{Binding Courses}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/people.png"/>
+                                <TextBlock Text="{Binding TeacherName}"/>
+                                <TextBlock Text=" ["/>
+                                <TextBlock Text="{Binding Courses.Count}"/>
+                                <TextBlock Text="]"/>
+                                
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                        <DataTemplate DataType="{x:Type local:Course}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/book.jpg" />
+                                <TextBlock Text="{Binding CourseName}"/>
+                                <TextBlock Text="{Binding OpeningClass}"/>
+                                <TextBlock Text=" (/"/>
+                                <TextBlock Text="{Binding Type}"/>
+                                <TextBlock Text="{Binding Point}"/>
+                                <TextBlock Text="學分)"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </TreeView.Resources>
                 </TreeView>
             </TabItem>
-            <TabItem Header="所有課程"/>
+            <TabItem Header="所有課程">
+                
+            </TabItem>
 
         </TabControl>
     </Grid>
