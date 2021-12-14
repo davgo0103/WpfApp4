@@ -67,9 +67,29 @@ namespace WpfApp4
             {
                 selectedCourse = trvTeacher.SelectedItem as Course;
                 selectedTeacher = selectedCourse.Tutor;
-                statusLabel.Content = selectedTeacher.ToString() + selectedCourse.ToString();
+                statusLabel.Content = selectedTeacher.ToString() +"/"+ selectedCourse.ToString();
             }
            }
+
+        private void registerButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(selectedCourse != null && cmbStudents.SelectedItem != null)
+            {
+                selectedCourse = trvTeacher.SelectedItem as Course;
+                selectedTeacher = selectedCourse.Tutor;
+                selectedStudent = cmbStudents.SelectedItem as Student;
+                
+                
+                records.Add(new Record() { SelectedStudent = selectedStudent, SelectedCourse = selectedCourse });
+                
+                //trvTeacher.Items.Refresh();
+
+                lvRegister.ItemsSource = records;
+                lvRegister.Items.Refresh();
+
+            }
+            
+        }
     }
 
     public class Teacher
