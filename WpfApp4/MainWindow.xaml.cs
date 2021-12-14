@@ -22,6 +22,7 @@ namespace WpfApp4
     public partial class MainWindow : Window
     {
         List<Teacher> teachers = new List<Teacher>();
+        List<Student> students = new List<Student>();
         public MainWindow()
         {
             InitializeComponent();
@@ -40,6 +41,14 @@ namespace WpfApp4
             teachers.Add(teacher2);
 
             trvTeacher.ItemsSource = teachers;
+
+
+            Student student1 = new Student() { StudentID = "A12345678", StudentName = "邱宇軒"};
+            students.Add(student1);
+            Student student2 = new Student() { StudentID = "A123124582", StudentName = "哈哈哈" };
+            students.Add(student2);
+
+            cmbStudents.ItemsSource = students;
         }
     }
 
@@ -74,6 +83,21 @@ namespace WpfApp4
         {
             return $"{CourseName} {Type} {Point}學分 開課班級:{OpeningClass}";
         }
+    }
+
+    public class Student
+    {
+        public string StudentID { get; set;}
+        public string StudentName { get; set;}
+        public override string ToString()
+        {
+            return $"{StudentID} {StudentName}";
+        }
+    }
+    public class Record
+    {
+        public Student SelectedStudent { get; set;}
+        public Course SelectedCourse { get; set;}
     }
 
 }
