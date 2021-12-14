@@ -23,6 +23,10 @@ namespace WpfApp4
     {
         List<Teacher> teachers = new List<Teacher>();
         List<Student> students = new List<Student>();
+        List<Record> records = new List<Record>();
+        Student selectedStudent;
+        Course selectedCourse;
+        Teacher selectedTeacher;
         public MainWindow()
         {
             InitializeComponent();
@@ -50,6 +54,22 @@ namespace WpfApp4
 
             cmbStudents.ItemsSource = students;
         }
+
+        private void cmbStudents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedStudent = (Student)cmbStudents.SelectedItem;
+            statusLabel.Content = "選取學生:" + selectedStudent.ToString();
+        }
+
+        private void trvTeacher_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (trvTeacher.SelectedItem is Course)
+            {
+                selectedCourse = trvTeacher.SelectedItem as Course;
+                selectedTeacher = selectedCourse.Tutor;
+                statusLabel.Content = selectedTeacher.ToString() + selectedCourse.ToString();
+            }
+           }
     }
 
     public class Teacher
