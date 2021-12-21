@@ -24,9 +24,12 @@ namespace WpfApp4
         List<Teacher> teachers = new List<Teacher>();
         List<Student> students = new List<Student>();
         List<Record> records = new List<Record>();
-        Student selectedStudent;
-        Course selectedCourse;
-        Teacher selectedTeacher;
+        List<Course> courses = new List<Course>();
+
+        Student selectedStudent = null;
+        Course selectedCourse = null;
+        Teacher selectedTeacher = null;
+        Record selectedRecord = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -45,7 +48,16 @@ namespace WpfApp4
             teachers.Add(teacher2);
 
             trvTeacher.ItemsSource = teachers;
-
+            //產生所有課程的LIST
+            foreach(Teacher teacher in teachers)
+            {
+                foreach(Course course in teacher.Courses)
+                {
+                    courses.Add(course);
+                    lbCourse.Items.Add(course);
+                }
+            }
+            
 
             Student student1 = new Student() { StudentID = "A12345678", StudentName = "邱宇軒"};
             students.Add(student1);
@@ -73,22 +85,52 @@ namespace WpfApp4
 
         private void registerButton_Click(object sender, RoutedEventArgs e)
         {
-            if(selectedCourse != null && cmbStudents.SelectedItem != null)
+            if (selectedCourse != null && cmbStudents.SelectedItem != null)
             {
-                selectedCourse = trvTeacher.SelectedItem as Course;
-                selectedTeacher = selectedCourse.Tutor;
-                selectedStudent = cmbStudents.SelectedItem as Student;
-                
-                
-                records.Add(new Record() { SelectedStudent = selectedStudent, SelectedCourse = selectedCourse });
-                
-                //trvTeacher.Items.Refresh();
-
+                Record currentRecord = new Record()
+                {
+                    SelectedStudent = selectedStudent,
+                    SelectedCourse = selectedCourse,
+                    TeacherName = selectedCourse.Tutor.TeacherName,
+                };
+                foreach(Record r in records)
+                {
+                    if (r.Equals(currentRecord))
+                    {
+                        MessageBox.Show($"{selectedStudent.StudentName} 已經選過 {selectedCourse.CourseName} 了，請重新選擇為選擇過的課程");
+                        return;
+                    }
+                }
+                records.Add(currentRecord);
                 lvRegister.ItemsSource = records;
                 lvRegister.Items.Refresh();
-
             }
+            else
+                MessageBox.Show("請選擇學生或課程", "資料不足");
             
+        }
+
+        private void lvRegister_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedRecord = (Record)lvRegister.SelectedItem;
+        }
+
+        private void withdrawButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedRecord != null)
+            {
+                records.Remove(selectedRecord);
+                lvRegister.ItemsSource = records;
+                lvRegister.Items.Refresh();
+            }
+            else MessageBox.Show("請選擇要退選的紀錄");
+        }
+
+        private void lbCourse_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedCourse = (Course)lbCourse.SelectedItem;
+            selectedTeacher = selectedCourse.Tutor;
+            statusLabel.Content = selectedCourse.ToString() + " /" + selectedTeacher.ToString();
         }
     }
 
@@ -138,6 +180,13 @@ namespace WpfApp4
     {
         public Student SelectedStudent { get; set;}
         public Course SelectedCourse { get; set;}
+        public string TeacherName { get; set; }
+        public bool Equals(Record r)
+        {
+            if (this.SelectedStudent.StudentID == r.SelectedStudent.StudentID && this.SelectedCourse.CourseName == r.SelectedCourse.CourseName)
+                return true;
+            else return false;
+        }
     }
 
 }

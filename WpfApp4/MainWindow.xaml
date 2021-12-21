@@ -45,14 +45,41 @@
                     </TreeView.Resources>
                 </TreeView>
             </TabItem>
-            <TabItem Header="所有課程">
+            <TabItem Header="所有課程" Height="19" VerticalAlignment="Top">
+                <ListBox x:Name="lbCourse" SelectionChanged="lbCourse_SelectionChanged">
+                    <ListBox.Resources>
+                        <DataTemplate DataType="{x:Type local:Course}">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="授課教師: "/>
+                                    <TextBlock Text="{Binding Tutor.TeacherName}" FontWeight="Bold"/>
+                                </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding CourseName}" Grid.Column="0" FontWeight="Bold" Foreground="Blue" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="{Binding OpeningClass}" Grid.Column="1"/>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="2">
+                                        <TextBlock Text="("/>
+                                        <TextBlock Text="{Binding Type}"/>
+                                        <TextBlock Text="{Binding Point}"/>
+                                        <TextBlock Text="學分)"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.Resources>
+                </ListBox>
 
             </TabItem>
 
         </TabControl>
         <Label Content="學生" HorizontalAlignment="Left" Margin="38,0,0,0" VerticalAlignment="Center"/>
         <ComboBox x:Name="cmbStudents" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Center" Width="200" SelectionChanged="cmbStudents_SelectionChanged"/>
-        <ListView x:Name="lvRegister" Grid.Column="2" Grid.Row="1" ItemsSource="{Binding records}" IsSynchronizedWithCurrentItem="False">
+        <ListView x:Name="lvRegister" Grid.Column="2" Grid.Row="1" ItemsSource="{Binding records}" IsSynchronizedWithCurrentItem="False" SelectionChanged="lvRegister_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="學號" DisplayMemberBinding="{Binding SelectedStudent.StudentID}"/>
@@ -66,7 +93,7 @@
             </ListView.View>
         </ListView>
         <Button x:Name="registerButton" Grid.Column="1" Content="- &gt;" HorizontalAlignment="Center" Margin="0,84,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="80" Click="registerButton_Click"/>
-        <Button Grid.Column="1" Content="&lt; -" HorizontalAlignment="Center" Margin="0,149,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="80"/>
+        <Button x:Name="withdrawButton" Grid.Column="1" Content="&lt; -" HorizontalAlignment="Center" Margin="0,149,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="80" Click="withdrawButton_Click"/>
         <Button Grid.Column="1" Content="存檔" HorizontalAlignment="Center" Margin="0,211,0,0" Grid.Row="1" VerticalAlignment="Top" Height="39" Width="80"/>
         <StatusBar Grid.Row="2" Grid.ColumnSpan="3" Margin="0,0,0,40" HorizontalAlignment="Stretch">
             <Label x:Name="statusLabel" Content="Label" HorizontalAlignment="Stretch"/>
