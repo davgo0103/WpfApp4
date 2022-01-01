@@ -204,6 +204,8 @@ namespace WpfApp4
             Console.WriteLine(jsonString);
 
         }
+
+ 
     }
     public class HighLowTemps
     {
