@@ -117,22 +117,92 @@ namespace WpfApp4
 
         private void registerButton_Click(object sender, RoutedEventArgs e)
         {
-            if(selectedCourse != null && cmbStudents.SelectedItem != null)
+            if (selectedCourse != null && cmbStudents.SelectedItem != null)
             {
-                selectedCourse = trvTeacher.SelectedItem as Course;
-                selectedTeacher = selectedCourse.Tutor;
-                selectedStudent = cmbStudents.SelectedItem as Student;
-                
-                
-                records.Add(new Record() { SelectedStudent = selectedStudent, SelectedCourse = selectedCourse });
-                
-                //trvTeacher.Items.Refresh();
-
+                Record currentRecord = new Record()
+                {
+                    SelectedStudent = selectedStudent,
+                    SelectedCourse = selectedCourse,
+                    TeacherName = selectedCourse.Tutor.TeacherName,
+                };
+                foreach (Record r in records)
+                {
+                    if (r.Equals(currentRecord))
+                    {
+                        MessageBox.Show($"{selectedStudent.StudentName} 已經選過 {selectedCourse.CourseName} 了，請重新選擇為選擇過的課程");
+                        return;
+                    }
+                }
+                records.Add(currentRecord);
                 lvRegister.ItemsSource = records;
                 lvRegister.Items.Refresh();
-
             }
-            
+            else
+                MessageBox.Show("請選擇學生或課程", "資料不足");
+
+        }
+
+        private void lvRegister_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedRecord = (Record)lvRegister.SelectedItem;
+        }
+
+        private void withdrawButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedRecord != null)
+            {
+                records.Remove(selectedRecord);
+                lvRegister.ItemsSource = records;
+                lvRegister.Items.Refresh();
+            }
+            else MessageBox.Show("請選擇要退選的紀錄");
+        }
+
+        private void lbCourse_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedCourse = (Course)lbCourse.SelectedItem;
+            selectedTeacher = selectedCourse.Tutor;
+            statusLabel.Content = selectedCourse.ToString() + " /" + selectedTeacher.ToString();
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveJson();
+        }
+
+        private void SaveJson()
+        {
+            var data = new Data
+            {
+                Date = DateTime.Parse("2019-08-01"),
+                TemperatureCelsius = 25,
+                Summary = "Hot",
+                SummaryField = "Hot",
+                DatesAvailable = new List<DateTimeOffset>()
+                    { DateTime.Parse("2019-08-01"), DateTime.Parse("2019-08-02") },
+                SelectedStudent = new Dictionary<string, Student>
+                {
+                    ["StudentID"] = new Student { StudentID = "StudentID", StudentName = "z" },
+                    ["StudentName"] = new Student { StudentName = "StudentName" }
+                },
+                SummaryWords = new[] { "Cool", "Windy", "Humid" }
+            };
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(data, options);
+
+
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "JSON|*.json|All Files|*.*";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                StreamWriter sw = new StreamWriter(saveFileDialog.FileName);
+                sw.Write(jsonString);
+                sw.Close();
+            }
+            Console.WriteLine(jsonString);
+
         }
     }
     public class HighLowTemps
@@ -209,8 +279,15 @@ namespace WpfApp4
     }
     public class Record
     {
-        public Student SelectedStudent { get; set;}
-        public Course SelectedCourse { get; set;}
+        public Student SelectedStudent { get; set; }
+        public Course SelectedCourse { get; set; }
+        public string TeacherName { get; set; }
+        public bool Equals(Record r)
+        {
+            if (this.SelectedStudent.StudentID == r.SelectedStudent.StudentID && this.SelectedCourse.CourseName == r.SelectedCourse.CourseName)
+                return true;
+            else return false;
+        }
     }
 
 }

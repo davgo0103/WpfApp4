@@ -93,7 +93,7 @@
             </ListView.View>
         </ListView>
         <Button x:Name="registerButton" Grid.Column="1" Content="- &gt;" HorizontalAlignment="Center" Margin="0,84,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="80" Click="registerButton_Click"/>
-        <Button Grid.Column="1" Content="&lt; -" HorizontalAlignment="Center" Margin="0,149,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="80"/>
+        <Button x:Name="withdrawButton" Grid.Column="1" Content="&lt; -" HorizontalAlignment="Center" Margin="0,149,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="80" Click="withdrawButton_Click"/>
         <Button Grid.Column="1" Content="存檔" HorizontalAlignment="Center" Margin="0,211,0,0" Grid.Row="1" VerticalAlignment="Top" Height="39" Width="80"/>
         <StatusBar Grid.Row="2" Grid.ColumnSpan="3" Margin="0,0,0,40" HorizontalAlignment="Stretch">
             <Label x:Name="statusLabel" Content="Label" HorizontalAlignment="Stretch"/>
