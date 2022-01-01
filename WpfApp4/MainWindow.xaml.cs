@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,12 +27,16 @@ namespace WpfApp4
         List<Teacher> teachers = new List<Teacher>();
         List<Student> students = new List<Student>();
         List<Record> records = new List<Record>();
-        Student selectedStudent;
-        Course selectedCourse;
-        Teacher selectedTeacher;
+        List<Course> courses = new List<Course>();
+
+        Student selectedStudent = null;
+        Course selectedCourse = null;
+        Teacher selectedTeacher = null;
+        Record selectedRecord = null;
         public MainWindow()
         {
             InitializeComponent();
+
 
             Teacher teacher1 = new Teacher() { TeacherName = "蔡士煒" };
             teacher1.Courses.Add(new Course(teacher1) { CourseName = "視窗程式設計", Type = "選修", Point = 3, OpeningClass = "資工二甲" });
@@ -45,14 +52,51 @@ namespace WpfApp4
             teachers.Add(teacher2);
 
             trvTeacher.ItemsSource = teachers;
+            //產生所有課程的LIST
+            foreach (Teacher teacher in teachers)
+            {
+                foreach (Course course in teacher.Courses)
+                {
+                    courses.Add(course);
+                    lbCourse.Items.Add(course);
+                }
+            }
 
 
-            Student student1 = new Student() { StudentID = "A12345678", StudentName = "邱宇軒"};
-            students.Add(student1);
-            Student student2 = new Student() { StudentID = "A123124582", StudentName = "哈哈哈" };
-            students.Add(student2);
 
+
+            ReadStudents();
             cmbStudents.ItemsSource = students;
+        }
+
+        private void ReadStudents()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "JSON|*.json|All Files|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open);
+
+                using (JsonDocument document = JsonDocument.Parse(fs))
+                {
+                    JsonElement root = document.RootElement;
+                    //JsonElement studentsElement = root.GetProperty("StudentID");
+                    foreach (JsonElement student in root.EnumerateArray())
+                    {
+                        if (student.TryGetProperty("StudentID", out JsonElement IDElement) && student.TryGetProperty("StudentName", out JsonElement NameElement))
+                        {
+                            Student studenttmp = new Student() { StudentID = NameElement.GetString(), StudentName = IDElement.GetString() };
+                            students.Add(studenttmp);
+                        }
+                        else
+                        {
+                            MessageBox.Show("讀取學生資料失敗");
+                            Environment.Exit(0);
+                        }
+                    }
+                }
+            }
+
         }
 
         private void cmbStudents_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -67,29 +111,128 @@ namespace WpfApp4
             {
                 selectedCourse = trvTeacher.SelectedItem as Course;
                 selectedTeacher = selectedCourse.Tutor;
-                statusLabel.Content = selectedTeacher.ToString() +"/"+ selectedCourse.ToString();
+                statusLabel.Content = selectedTeacher.ToString() + "/" + selectedCourse.ToString();
             }
-           }
+        }
 
         private void registerButton_Click(object sender, RoutedEventArgs e)
         {
-            if(selectedCourse != null && cmbStudents.SelectedItem != null)
+            if (selectedCourse != null && cmbStudents.SelectedItem != null)
             {
-                selectedCourse = trvTeacher.SelectedItem as Course;
-                selectedTeacher = selectedCourse.Tutor;
-                selectedStudent = cmbStudents.SelectedItem as Student;
-                
-                
-                records.Add(new Record() { SelectedStudent = selectedStudent, SelectedCourse = selectedCourse });
-                
-                //trvTeacher.Items.Refresh();
-
+                Record currentRecord = new Record()
+                {
+                    SelectedStudent = selectedStudent,
+                    SelectedCourse = selectedCourse,
+                    TeacherName = selectedCourse.Tutor.TeacherName,
+                };
+                foreach (Record r in records)
+                {
+                    if (r.Equals(currentRecord))
+                    {
+                        MessageBox.Show($"{selectedStudent.StudentName} 已經選過 {selectedCourse.CourseName} 了，請重新選擇為選擇過的課程");
+                        return;
+                    }
+                }
+                records.Add(currentRecord);
                 lvRegister.ItemsSource = records;
                 lvRegister.Items.Refresh();
-
             }
-            
+            else
+                MessageBox.Show("請選擇學生或課程", "資料不足");
+
         }
+
+        private void lvRegister_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedRecord = (Record)lvRegister.SelectedItem;
+        }
+
+        private void withdrawButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedRecord != null)
+            {
+                records.Remove(selectedRecord);
+                lvRegister.ItemsSource = records;
+                lvRegister.Items.Refresh();
+            }
+            else MessageBox.Show("請選擇要退選的紀錄");
+        }
+
+        private void lbCourse_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedCourse = (Course)lbCourse.SelectedItem;
+            selectedTeacher = selectedCourse.Tutor;
+            statusLabel.Content = selectedCourse.ToString() + " /" + selectedTeacher.ToString();
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveJson();
+        }
+
+        private void SaveJson()
+        {
+            var data = new Data
+            {
+                Date = DateTime.Parse("2019-08-01"),
+                TemperatureCelsius = 25,
+                Summary = "Hot",
+                SummaryField = "Hot",
+                DatesAvailable = new List<DateTimeOffset>()
+                    { DateTime.Parse("2019-08-01"), DateTime.Parse("2019-08-02") },
+                SelectedStudent = new Dictionary<string, Student>
+                {
+                    ["StudentID"] = new Student { StudentID = "StudentID", StudentName = "z" },
+                    ["StudentName"] = new Student { StudentName = "StudentName" }
+                },
+                SummaryWords = new[] { "Cool", "Windy", "Humid" }
+            };
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(data, options);
+
+
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "JSON|*.json|All Files|*.*";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                StreamWriter sw = new StreamWriter(saveFileDialog.FileName);
+                sw.Write(jsonString);
+                sw.Close();
+            }
+            Console.WriteLine(jsonString);
+
+        }
+    }
+    public class HighLowTemps
+    {
+        public int High { get; set; }
+        public int Low { get; set; }
+    }
+    internal class Data
+    {
+        public DateTimeOffset Date { get; set; }
+        public int TemperatureCelsius { get; set; }
+        public string Summary { get; set; }
+        public string SummaryField;
+        public IList<DateTimeOffset> DatesAvailable { get; set; }
+        public Dictionary<string, HighLowTemps> TemperatureRanges { get; set; }
+        public string[] SummaryWords { get; set; }
+
+
+
+        public Dictionary<string, Student> SelectedStudent { get; set; }
+        //public string StudentID { get; set; }
+        //public string StudentName { get; set; }
+        //public string TeacherName { get; set; }
+        //public string SelectedCourse { get; set; }
+        //public string CourseName { get; set; }
+        //public string Type { get; set; }
+        //public string Point { get; set; }
+        //public string OpeningClass { get; set; }
+        //public string ClassTime { get; set; }
+        //public string Tutor { get; set; }
     }
 
     public class Teacher
@@ -109,7 +252,7 @@ namespace WpfApp4
     {
         public string CourseName { get; set; }
         public string Type { get; set; }
-        public int Point { get; set; } 
+        public int Point { get; set; }
         public string OpeningClass { get; set; }
         public Teacher Tutor { get; set; }
 
@@ -127,8 +270,8 @@ namespace WpfApp4
 
     public class Student
     {
-        public string StudentID { get; set;}
-        public string StudentName { get; set;}
+        public string StudentID { get; set; }
+        public string StudentName { get; set; }
         public override string ToString()
         {
             return $"{StudentID} {StudentName}";
@@ -136,8 +279,15 @@ namespace WpfApp4
     }
     public class Record
     {
-        public Student SelectedStudent { get; set;}
-        public Course SelectedCourse { get; set;}
+        public Student SelectedStudent { get; set; }
+        public Course SelectedCourse { get; set; }
+        public string TeacherName { get; set; }
+        public bool Equals(Record r)
+        {
+            if (this.SelectedStudent.StudentID == r.SelectedStudent.StudentID && this.SelectedCourse.CourseName == r.SelectedCourse.CourseName)
+                return true;
+            else return false;
+        }
     }
 
 }
