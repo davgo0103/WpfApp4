@@ -3,19 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Newtonsoft.Json;
+
 
 namespace WpfApp4
 {
@@ -172,71 +164,27 @@ namespace WpfApp4
 
         private void SaveJson()
         {
-            var data = new Data
-            {
-                Date = DateTime.Parse("2019-08-01"),
-                TemperatureCelsius = 25,
-                Summary = "Hot",
-                SummaryField = "Hot",
-                DatesAvailable = new List<DateTimeOffset>()
-                    { DateTime.Parse("2019-08-01"), DateTime.Parse("2019-08-02") },
-                SelectedStudent = new Dictionary<string, Student>
-                {
-                    ["StudentID"] = new Student { StudentID = "StudentID", StudentName = "z" },
-                    ["StudentName"] = new Student { StudentName = "StudentName" }
-                },
-                SummaryWords = new[] { "Cool", "Windy", "Humid" }
-            };
-
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(data, options);
-
-
-
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON|*.json|All Files|*.*";
             if (saveFileDialog.ShowDialog() == true)
             {
+                Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                serializer.Formatting = Formatting.Indented;
                 StreamWriter sw = new StreamWriter(saveFileDialog.FileName);
-                sw.Write(jsonString);
+                Newtonsoft.Json.JsonWriter writer = new Newtonsoft.Json.JsonTextWriter(sw); 
+                {
+                    serializer.Serialize(writer, records);
+                }
                 sw.Close();
+
             }
-            Console.WriteLine(jsonString);
+
 
         }
 
  
     }
-    public class HighLowTemps
-    {
-        public int High { get; set; }
-        public int Low { get; set; }
-    }
-    internal class Data
-    {
-        public DateTimeOffset Date { get; set; }
-        public int TemperatureCelsius { get; set; }
-        public string Summary { get; set; }
-        public string SummaryField;
-        public IList<DateTimeOffset> DatesAvailable { get; set; }
-        public Dictionary<string, HighLowTemps> TemperatureRanges { get; set; }
-        public string[] SummaryWords { get; set; }
-
-
-
-        public Dictionary<string, Student> SelectedStudent { get; set; }
-        //public string StudentID { get; set; }
-        //public string StudentName { get; set; }
-        //public string TeacherName { get; set; }
-        //public string SelectedCourse { get; set; }
-        //public string CourseName { get; set; }
-        //public string Type { get; set; }
-        //public string Point { get; set; }
-        //public string OpeningClass { get; set; }
-        //public string ClassTime { get; set; }
-        //public string Tutor { get; set; }
-    }
-
     public class Teacher
     {
         public string TeacherName { get; set; }
