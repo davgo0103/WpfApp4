@@ -173,9 +173,7 @@ namespace WpfApp4
                 serializer.Formatting = Formatting.Indented;
                 StreamWriter sw = new StreamWriter(saveFileDialog.FileName);
                 Newtonsoft.Json.JsonWriter writer = new Newtonsoft.Json.JsonTextWriter(sw); 
-                {
-                    serializer.Serialize(writer, records);
-                }
+                serializer.Serialize(writer, records);
                 sw.Close();
 
             }
